@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Parts Shop{% endblock %}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; color: #1d1d1f; }
+    header { display: flex; gap: 1rem; align-items: center; padding: .75rem 1.5rem; background: #14213d; color: #fff; }
+    header a { color: #fff; }
+    header .spacer { flex: 1; }
+    main { max-width: 760px; margin: 1.5rem auto; padding: 0 1rem; }
+    ul.products { list-style: none; padding: 0; display: grid; gap: .75rem; }
+    ul.products li { display: flex; align-items: center; gap: 1rem; border: 1px solid #ddd; border-radius: 6px; padding: .75rem 1rem; }
+    ul.products .grow { flex: 1; }
+    label { display: block; margin-top: .75rem; }
+    input, select { padding: .4rem; font-size: 1rem; }
+    button { padding: .45rem .9rem; font-size: 1rem; cursor: pointer; }
+    [role=alert] { color: #b00020; margin-top: .75rem; }
+    table { border-collapse: collapse; width: 100%; }
+    td, th { border-bottom: 1px solid #ddd; padding: .5rem; text-align: left; }
+  </style>
+</head>
+<body>
+<header>
+  <strong>Parts Shop</strong>
+  <span class="spacer"></span>
+  {% if user %}
+    <span data-test="current-user">{{ user }}</span>
+    <a href="/cart" data-test="cart-link">Cart (<span data-test="cart-badge">{{ cart_count }}</span>)</a>
+    <a href="/logout" data-test="logout">Log out</a>
+  {% endif %}
+</header>
+<main>{% block content %}{% endblock %}</main>
+</body>
+</html>

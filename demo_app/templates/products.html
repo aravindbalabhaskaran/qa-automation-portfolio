@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Products · Parts Shop{% endblock %}
+{% block content %}
+<h1>Products</h1>
+<div>
+  <input id="search" type="search" aria-label="Search products" placeholder="Search products" data-test="search">
+  <select id="sort" aria-label="Sort products" data-test="sort">
+    <option value="name">Name (A-Z)</option>
+    <option value="price_asc">Price (low to high)</option>
+    <option value="price_desc">Price (high to low)</option>
+  </select>
+</div>
+<ul class="products" id="product-list" data-test="product-list"></ul>
+<p id="empty" data-test="empty-state" hidden>No products found</p>
+<script>
+  const list = document.getElementById("product-list");
+  const empty = document.getElementById("empty");
+  const search = document.getElementById("search");
+  const sort = document.getElementById("sort");
+  let timer;
+
+  async function load() {
+    const params = new URLSearchParams({ q: search.value, sort: sort.value });
+    const res = await fetch("/api/products?" + params);
+    const data = await res.json();
+    render(data.items);
+  }
+
+  function render(items) {
+    list.replaceChildren();
+    empty.hidden = items.length > 0;
+    for (const p of items) {
+      const li = document.createElement("li");
+      li.dataset.test = "product-card";
+      li.dataset.productId = p.id;
+      const out = p.stock === 0;
+      li.innerHTML = `
+        <span class="grow"><strong data-test="product-name"></strong><br>
+          <small data-test="product-category"></small></span>
+        <span data-test="product-price">€${p.price.toFixed(2)}</span>
+        <button data-test="add-to-cart" ${out ? "disabled" : ""}>${out ? "Out of stock" : "Add to cart"}</button>`;
+      li.querySelector("[data-test=product-name]").textContent = p.name;
+      li.querySelector("[data-test=product-category]").textContent = p.category;
+      li.querySelector("button").addEventListener("click", () => addToCart(p.id));
+      list.appendChild(li);
+    }
+  }
+
+  async function addToCart(id) {
+    const res = await fetch("/cart/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ product_id: id }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      document.querySelector("[data-test=cart-badge]").textContent = data.count;
+    }
+  }
+
+  search.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(load, 150); });
+  sort.addEventListener("change", load);
+  load();
+</script>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Order confirmed · Parts Shop{% endblock %}
+{% block content %}
+<h1 data-test="confirmation-title">Thank you for your order</h1>
+<p>Order number: <strong data-test="order-id">{{ order.id }}</strong></p>
+<p>Total: <strong data-test="order-total">{{ euro((order.total * 100)|round|int) }}</strong></p>
+<p><a href="/products">Back to products</a></p>
+{% endblock %}

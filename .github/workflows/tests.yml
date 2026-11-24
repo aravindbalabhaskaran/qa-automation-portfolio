@@ -1,0 +1,59 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 5 * * 1-5"   # weekday regression run
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: playwright install --with-deps chromium
+      - name: Smoke tests
+        run: pytest -m smoke --junitxml=reports/smoke.xml
+      - name: Full regression
+        run: pytest --junitxml=reports/regression.xml
+      - name: Upload reports and failure artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            reports/
+            artifacts/
+          if-no-files-found: ignore
+
+  newman:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Start demo app
+        run: |
+          python -m demo_app &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:5000/api/health && break || sleep 1; done
+      - name: Run Postman collection with Newman
+        run: >
+          npx --yes newman run postman/parts-shop.postman_collection.json
+          -e postman/local.postman_environment.json
+          --reporters cli,junit --reporter-junit-export reports/newman.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: newman-results
+          path: reports/

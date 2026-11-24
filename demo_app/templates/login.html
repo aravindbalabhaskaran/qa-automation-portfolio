@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Log in · Parts Shop{% endblock %}
+{% block content %}
+<h1>Log in</h1>
+<form method="post" action="/login" data-test="login-form">
+  <label for="username">Username</label>
+  <input id="username" name="username" data-test="username" autocomplete="off">
+  <label for="password">Password</label>
+  <input id="password" name="password" type="password" data-test="password">
+  <p><button type="submit" data-test="login-button">Log in</button></p>
+</form>
+{% if error %}<div role="alert" data-test="login-error">{{ error }}</div>{% endif %}
+{% endblock %}

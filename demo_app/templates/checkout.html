@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Checkout · Parts Shop{% endblock %}
+{% block content %}
+<h1>Checkout</h1>
+<form method="post" action="/checkout" data-test="checkout-form">
+  <label for="name">Full name</label>
+  <input id="name" name="name" data-test="name">
+  <label for="postal_code">Postal code</label>
+  <input id="postal_code" name="postal_code" data-test="postal-code">
+  <p><button type="submit" data-test="place-order">Place order</button></p>
+</form>
+{% if error %}<div role="alert" data-test="checkout-error">{{ error }}</div>{% endif %}
+{% endblock %}

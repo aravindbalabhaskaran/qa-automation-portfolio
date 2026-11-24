@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Cart · Parts Shop{% endblock %}
+{% block content %}
+<h1>Your cart</h1>
+{% if rows %}
+<table data-test="cart-table">
+  <thead><tr><th>Item</th><th>Qty</th><th>Line total</th><th></th></tr></thead>
+  <tbody>
+  {% for row in rows %}
+    <tr data-test="cart-item">
+      <td data-test="cart-item-name">{{ row.product.name }}</td>
+      <td data-test="cart-item-qty">{{ row.quantity }}</td>
+      <td data-test="cart-item-total">{{ euro(row.line_cents) }}</td>
+      <td>
+        <form method="post" action="/cart/remove/{{ row.product.id }}">
+          <button type="submit" data-test="remove">Remove</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p>Total: <strong data-test="cart-total">{{ euro(total_cents) }}</strong></p>
+<p><a href="/checkout" data-test="checkout-button">Checkout</a></p>
+{% else %}
+<p data-test="cart-empty">Your cart is empty</p>
+{% endif %}
+<p><a href="/products">Continue shopping</a></p>
+{% endblock %}
