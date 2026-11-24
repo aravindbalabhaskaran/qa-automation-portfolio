@@ -1,5 +1,7 @@
 # QA Automation Portfolio: Playwright, pytest and Postman
 
+![tests](https://github.com/aravindbalabhaskaran/qa-automation-portfolio/actions/workflows/tests.yml/badge.svg)
+
 End-to-end test automation for a small automotive-parts web shop. It covers the web UI and the REST API,
 with the tests in Python (pytest) and the API checks also available as a Postman/Newman collection.
 
